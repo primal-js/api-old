@@ -12,9 +12,7 @@ export default ({ logger, config }: Context, { app, modules: { features } }: Rou
   /**
    * Web Routes
    */
-  app.use('/features', (_, res) => {
-    res.send('Features!')
-  })
+  app.use("/features", features.apiRouter)
 
   /**
    * 404 Page Not found
