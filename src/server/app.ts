@@ -1,26 +1,24 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
+import bodyParser from 'body-parser'
 import compression from 'compression'
 import initRoutes from './routes'
-import path from 'path'
+import mung from 'express-mung'
+
 import { Context, AppModules } from './models'
+import boomMiddleware from './middlewares/boom'
+
+
 
 export default (context: Context, modules: AppModules) => {
   const app = express()
 
   /**
-   * Configure views template, static files, gzip
+   * Configure Middlewares
    */
   app.use(compression())
+  app.use(bodyParser.json())
 
-  app.set('views', './views')
-  app.set('view engine', 'pug')
-
-  app.use(
-    '/public',
-    express.static(path.join(__dirname, '..', 'public'), {
-      maxAge: '1 year'
-    })
-  )
+  app.use(mung.json(boomMiddleware))
 
   app.disable('x-powered-by')
 
