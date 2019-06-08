@@ -1,0 +1,20 @@
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.o-ratio__content { overflow: hidden; }
+
+// Simple Markdown Editor
+.editor-toolbar svg {
+    margin-right: 12px;
+}
+
+.content {
+    .CodeMirror {
+        .CodeMirror-placeholder,
+        pre:not(:last-child) {
+            margin-bottom: 0 !important;
+        }
+    }
+}

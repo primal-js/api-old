@@ -1,0 +1,16 @@
+# Dependency directory
+node_modules/
+config.json
+report/
+dist/
+# other
+.tmp
+*.log
+index.html
+public/build/
+
+coverage/
+vendor/
+.env
+local-datastore/
+__local/
