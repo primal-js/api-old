@@ -20,7 +20,7 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
         const features = await featureDomain.getFeatures()
         res.json(features.entities)
       } catch (error) {
-        res.json(Boom.boomify(error)
+        res.json(Boom.boomify(error))
       }
     },
     async detailFeature(req, res) {
