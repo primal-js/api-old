@@ -8,6 +8,7 @@ export default (context: Context, { feature }: Modules) => {
   apiRouter.get('/:id', feature.routesHandlers.detailFeature)
   apiRouter.post('/', feature.routesHandlers.createFeature)
   apiRouter.put('/:id', feature.routesHandlers.updateFeature)
+  apiRouter.delete('/:id', feature.routesHandlers.deleteFeature)
   
   return {
     apiRouter

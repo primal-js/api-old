@@ -30,12 +30,7 @@ export default (context: Context, { featureDB }: Modules): FeatureDomain => {
       if (isNaN(id)) {
         throw new Error("Feature id must be an integer")
       }
-      let feature: Entity<FeatureType>
-      try {
-        feature = <Entity<FeatureType>>(await featureDB.getFeature(id, dataloader))
-      } catch (err) {
-        throw err
-      }
+      const feature = <Entity<FeatureType>>(await featureDB.getFeature(id, dataloader))
       return feature
     },
     /**

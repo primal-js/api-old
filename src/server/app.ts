@@ -16,8 +16,9 @@ export default (context: Context, modules: AppModules) => {
    * Configure Middlewares
    */
   app.use(compression())
-  app.use(bodyParser.json())
 
+  app.use(bodyParser.json())
+  
   app.use(mung.json(boomMiddleware))
 
   app.disable('x-powered-by')

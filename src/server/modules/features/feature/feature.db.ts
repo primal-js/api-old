@@ -40,7 +40,7 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
    * Configuration for our Model.list() query shortcut
    */
   schema.queries('list', {
-    order: { property: 'modifiedOn', descending: true },
+    order: { property: 'createdAt', descending: true },
     ancestors: ancestor,
   })
 
@@ -56,10 +56,10 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
     getFeatures: Feature.list.bind(Feature),
     getFeature(id, dataloader, format = 'JSON') {
       return Feature.get(id, ancestor, null, null, { dataloader }).then(entity => {
-        console.log({ entity })
+        if (!entity) {
+          return
+        }
         if (format === 'JSON') {
-          // Transform the gstore 'Entity' instance
-          // to a plain object (adding an 'id' prop to it)
           return entity.plain()
         }
         return entity
@@ -67,7 +67,7 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
     },
     createFeature(data, dataloader) {
       const feature = new Feature(data, null, ancestor)
-      
+
       // We add the DataLoader instance to our entity context
       // so it is available in our 'pre' Hooks
       feature.context.dataloader = dataloader

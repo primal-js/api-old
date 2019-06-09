@@ -9,46 +9,34 @@ export interface FeatureRoutesHandlers {
   detailFeature(req: Request, res: Response): any
   createFeature(req: Request, res: Response): any
   updateFeature(req: Request, res: Response): any
+  deleteFeature(req: Request, res: Response): any
 }
 
 export default ({ gstore, logger }: Context, { featureDomain }: Modules): FeatureRoutesHandlers => {
   return {
     async listFeatures(_, res) {
-      const template = 'features/index'
-      let features: QueryResult<FeatureType>
 
       try {
-        features = await featureDomain.getFeatures()
+        const features = await featureDomain.getFeatures()
+        res.json(features.entities)
       } catch (error) {
-        return res.render(template, { features: [], error })
+        res.json(Boom.boomify(error)
       }
-
-      res.render(template, {
-        features: features.entities,
-        pageId: 'home'
-      })
     },
     async detailFeature(req, res) {
-      /**
-       * Create Dataloader instance, unique to this Http Request
-       */
       const dataloader = gstore.createDataLoader()
-      const template = 'features/detail'
+      const { id } = req.params
       
-      let feature: Entity<FeatureType>
       try {
-        feature = await featureDomain.getFeature(req.params.id, dataloader)
-      } catch (error) {
-        if (error.code === 'ERR_ENTITY_NOT_FOUND') {
-          return res.redirect('/404')
-        }
-        return res.render(template, { post: null, error })
-      }
+        const feature = await featureDomain.getFeature(id, dataloader)
 
-      return res.render(template, {
-        pageId: 'feature-view',
-        feature
-      })
+        if (!feature) {
+          return res.json(Boom.notFound())
+        }
+        res.json(feature)
+      } catch (error) {
+        res.json(Boom.boomify(error))
+      }
     },
     async createFeature(req, res) {
       // const entityData = Object.assign({}, req.body, {
@@ -63,7 +51,7 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
         const feature = await featureDomain.createFeature(entityData, dataloader)
         res.json(feature.plain())
       } catch (err) {
-        return Boom.badRequest(err)
+        res.json(Boom.badRequest(err))
       }
     },
     async updateFeature(req, res) {
@@ -75,7 +63,20 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
         const feature = await featureDomain.updateFeature(id, entityData, dataloader, true)
         res.json(feature.plain())
       } catch (err) {
-        return Boom.badRequest(err)
+        res.json(Boom.badRequest(err))
+      }
+    },
+    async deleteFeature(req, res) {
+      const { id } = req.params
+
+      try {
+        const deleteResponse = await featureDomain.deleteFeature(id)
+        res.json({
+          id: deleteResponse.key.id,
+          success: deleteResponse.success,
+        })
+      } catch (err) {
+        res.json(Boom.badRequest(err))
       }
     }
   }
