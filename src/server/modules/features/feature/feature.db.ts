@@ -31,7 +31,7 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
     version: { type: String },
     path: { type: String },
     extension: { type: String },
-    projectId: { type: String },
+    projectId: { type: Number },
   })
 
   const ancestor = ['Features', 'default']
@@ -73,11 +73,18 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
       feature.context.dataloader = dataloader
       return feature.save()
     },
-    updateFeature(id, data, dataloader, replace) {
-      return Feature.update(id, data, ancestor, null, null, {
-        dataloader,
-        replace
-      })
+    async updateFeature(id, data, dataloader, replace) {
+      const feature = await Feature.get(id, ancestor, null, null, { dataloader })
+      
+      if (!feature) {
+        return
+      }
+      Object.assign(feature, data, { id })
+      return feature.save()
+      // return Feature.update(id, data, ancestor, null, null, {
+      //   dataloader,
+      //   replace
+      // })
     },
     deleteFeature(id) {
       return Feature.delete(id, ancestor)

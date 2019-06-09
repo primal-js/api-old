@@ -61,6 +61,9 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
 
       try {
         const feature = await featureDomain.updateFeature(id, entityData, dataloader, true)
+        if (!feature) {
+          return res.json(Boom.notFound())  
+        }
         res.json(feature.plain())
       } catch (err) {
         res.json(Boom.badRequest(err))
