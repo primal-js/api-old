@@ -10,6 +10,8 @@ export interface FeatureRoutesHandlers {
   createFeature(req: Request, res: Response): any
   updateFeature(req: Request, res: Response): any
   deleteFeature(req: Request, res: Response): any
+
+  uploadFeature(req: Request, res: Response): any
 }
 
 export default ({ gstore, logger }: Context, { featureDomain }: Modules): FeatureRoutesHandlers => {
@@ -43,6 +45,9 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
       //   file: req.file
       // })
       const entityData = req.body
+      console.log({
+        entityData
+      })
 
       // We use the gstore helper to create a Dataloader instance
       const dataloader = gstore.createDataLoader()
@@ -81,6 +86,18 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
       } catch (err) {
         res.json(Boom.badRequest(err))
       }
+    },
+    async uploadFeature(req, res) {
+      console.log('body', req.body)
+
+      let fileContent = req.file.buffer.toString('utf8')
+      console.log(fileContent)
+
+      if (req.body.name === 'Button.vue') {
+        return res.json({ response: 'OK' })
+      }
+
+      res.json(Boom.notImplemented())
     }
   }
 }
