@@ -1,13 +1,7 @@
 indexes:
 
-- kind: BlogPost
+- kind: "Feature"
   ancestor: yes
   properties:
-  - name: modifiedOn
-    direction: desc
-
-- kind: Comment
-  properties:
-  - name: blogPost
-  - name: createdOn
+  - name: "createdAt"
     direction: desc

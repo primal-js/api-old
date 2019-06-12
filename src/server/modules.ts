@@ -1,4 +1,5 @@
 import initFeaturesModule from './modules/features'
+import initUploadsModule from './modules/uploads'
 import initUtilsModule from './modules/utils'
 import { Context, AppModules } from './models'
 
@@ -8,10 +9,12 @@ export default (context: Context): AppModules => {
   /**
    * Initialize our module by passing the context & each module dependencies
    */
-  const features = initFeaturesModule(context, { utils })
+  const uploads = initUploadsModule(context)
+  const features = initFeaturesModule(context, { utils, uploads })
 
   return {
     features,
+    uploads,
     utils,
   }
 }

@@ -7,10 +7,7 @@ import { Context, Modules } from '../models'
 export interface FeatureRoutesHandlers {
   listFeatures(req: Request, res: Response): any
   detailFeature(req: Request, res: Response): any
-  createFeature(req: Request, res: Response): any
-  updateFeature(req: Request, res: Response): any
   deleteFeature(req: Request, res: Response): any
-
   uploadFeature(req: Request, res: Response): any
 }
 
@@ -40,40 +37,6 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
         res.json(Boom.boomify(error))
       }
     },
-    async createFeature(req, res) {
-      // const entityData = Object.assign({}, req.body, {
-      //   file: req.file
-      // })
-      const entityData = req.body
-      console.log({
-        entityData
-      })
-
-      // We use the gstore helper to create a Dataloader instance
-      const dataloader = gstore.createDataLoader()
-
-      try {
-        const feature = await featureDomain.createFeature(entityData, dataloader)
-        res.json(feature.plain())
-      } catch (err) {
-        res.json(Boom.badRequest(err))
-      }
-    },
-    async updateFeature(req, res) {
-      const dataloader = gstore.createDataLoader();
-      const { id } = req.params
-      const entityData = req.body
-
-      try {
-        const feature = await featureDomain.updateFeature(id, entityData, dataloader, true)
-        if (!feature) {
-          return res.json(Boom.notFound())  
-        }
-        res.json(feature.plain())
-      } catch (err) {
-        res.json(Boom.badRequest(err))
-      }
-    },
     async deleteFeature(req, res) {
       const { id } = req.params
 
@@ -88,16 +51,29 @@ export default ({ gstore, logger }: Context, { featureDomain }: Modules): Featur
       }
     },
     async uploadFeature(req, res) {
-      console.log('body', req.body)
+      const dataloader = gstore.createDataLoader()
+      const fileContent = req.file.buffer.toString('utf8')
+      const { file, version, dependencies } = req.body
+      const nameExtensionMatches = file.match(/(^.+)\.(.+)$/) || []
+      const [, name, extension] = nameExtensionMatches
+      const id = `${name}@${version}`
 
-      let fileContent = req.file.buffer.toString('utf8')
-      console.log(fileContent)
-
-      if (req.body.name === 'Button.vue') {
-        return res.json({ response: 'OK' })
+      const entity = {
+        id,
+        name,
+        version,
+        extension,
+        content: fileContent,
       }
 
-      res.json(Boom.notImplemented())
+      try {
+        const feature = await featureDomain.storeFeature(entity, dataloader)
+        console.log({feature: feature.plain()})
+        res.json(feature.plain())
+      } catch (error) {
+        console.error({ error })
+        res.json(Boom.badRequest(error))
+      }
     }
   }
 }

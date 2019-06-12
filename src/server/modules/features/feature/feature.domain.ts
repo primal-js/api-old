@@ -7,8 +7,7 @@ import { FeatureType } from './models'
 export interface FeatureDomain {
   getFeatures(options?: QueryListOptions): Promise<QueryResult<FeatureType>>
   getFeature(id: number | string, dataLoader: any): Promise<Entity<FeatureType>>
-  createFeature(data: FeatureType, dataLoader: any): Promise<Entity<FeatureType>>
-  updateFeature(id: string | number, data: FeatureType, dataloader: any, overwrite?: boolean): Promise<Entity<FeatureType>>
+  storeFeature(data: FeatureType, dataLoader: any): Promise<Entity<FeatureType>>
   deleteFeature(id: string | number): Promise<DeleteResult>,
 }
 
@@ -34,26 +33,12 @@ export default (context: Context, { featureDB }: Modules): FeatureDomain => {
       return feature
     },
     /**
-     * Create a Feature
+     * Store a Feature
      * @param {*} data Feature entity data
      * @param {*} dataloader optional Dataloader instance
      */
-    createFeature(data: FeatureType, dataloader: any) {
-      return featureDB.createFeature(data, dataloader)
-    },
-    /**
-     * Update a Feature entity in the Datastore
-     * @param {number} id Id of the Feature to update
-     * @param {*} data Feature entity data
-     * @param {Dataloader} dataloader optional Dataloader instance
-     * @param {boolean} overwrite overwrite the entity in Datastore
-     */
-    updateFeature(id, data, dataloader, overwrite = false) {
-      id = +id
-      if (isNaN(id)) {
-        throw new Boom("Feature id must be an integer", { statusCode: 400 })
-      }
-      return featureDB.updateFeature(id, data, dataloader, overwrite)
+    storeFeature(data: FeatureType, dataloader: any) {
+      return featureDB.storeFeature(data, dataloader)
     },
     /**
      * Delete a Feature entity in the Datastore

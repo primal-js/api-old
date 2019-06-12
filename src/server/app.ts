@@ -8,7 +8,6 @@ import { Context, AppModules } from './models'
 import boomMiddleware from './middlewares/boom'
 
 
-
 export default (context: Context, modules: AppModules) => {
   const app = express()
 

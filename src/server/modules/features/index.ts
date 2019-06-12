@@ -10,7 +10,9 @@ export interface FeaturesModule {
 
 export default (context: Context, modules: Modules): FeaturesModule => {
   const feature = initFeature(context, {})
-  const { apiRouter } = initRoutes(context, { feature })
+  const { uploads } = modules
+
+  const { apiRouter } = initRoutes(context, { feature, uploads })
 
   return {
     apiRouter,

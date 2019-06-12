@@ -2,7 +2,8 @@ import {
   Entity,
   QueryListOptions,
   QueryResult,
-  DeleteResult
+  DeleteResult,
+  Validation
 } from 'gstore-node'
 
 import { Context, Modules } from '../models'
@@ -11,8 +12,7 @@ import { FeatureType } from './models'
 export interface FeatureDB {
   getFeatures(options?: QueryListOptions): Promise<QueryResult<FeatureType>>
   getFeature(id: number, dataloader: any, format?: string): Promise<Entity<FeatureType> | FeatureType>
-  createFeature(data: FeatureType, dataloader: any): Promise<Entity<FeatureType>>
-  updateFeature(id: number, data: any, dataloader: any, replace: boolean ): Promise<Entity<FeatureType>>
+  storeFeature(data: FeatureType, dataloader: any): Promise<Entity<FeatureType>>
   deleteFeature(id: number): Promise<DeleteResult>,
 }
 
@@ -24,6 +24,7 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
    * Schema for the Feature entity Kind
    */
   const schema = new Schema<FeatureType>({
+    id: { type: String },
     createdAt: { type: Date, default: gstore.defaultValues.NOW, read: false, write: false },
     updatedAt: { type: Date, default: gstore.defaultValues.NOW, read: false, write: false },
     deletedAt: { type: Date, read: false, write: false },
@@ -32,6 +33,7 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
     path: { type: String },
     extension: { type: String },
     projectId: { type: Number },
+    content: { type: String },
   })
 
   const ancestor = ['Features', 'default']
@@ -65,28 +67,14 @@ export default (context: Context, { utils }: Modules): FeatureDB => {
         return entity
       })
     },
-    createFeature(data, dataloader) {
-      const feature = new Feature(data, null, ancestor)
-
-      // We add the DataLoader instance to our entity context
-      // so it is available in our 'pre' Hooks
-      feature.context.dataloader = dataloader
-      return feature.save()
-    },
-    async updateFeature(id, data, dataloader, replace) {
-      const feature = await Feature.get(id, ancestor, null, null, { dataloader })
-      
-      if (!feature) {
-        return
-      }
-      Object.assign(feature, data, { id })
-      return feature.save()
-      // return Feature.update(id, data, ancestor, null, null, {
-      //   dataloader,
-      //   replace
-      // })
+    async storeFeature(data, dataloader) {
+      return Feature.update(data.id, data, ancestor, null, null, {
+        dataloader,
+        replace: true,
+      })
     },
     deleteFeature(id) {
+      // Feature.deleteAll()
       return Feature.delete(id, ancestor)
     },
   }
