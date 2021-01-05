@@ -44,7 +44,7 @@
     "@google-cloud/storage": "^1.7.0",
     "@types/express-mung": "^0.5.0",
     "arrify": "^1.0.1",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.18.3",
     "boom": "7.2.0",
     "bulma": "0.7.1",
